@@ -77,7 +77,7 @@ br.bookTitle= book.Title;
 br.bookUrl  = book.SourceURL;
 
 // Override the path used to find UI images
-//br.imagesBaseURL = '../BookReader/images/';
+br.imagesBaseURL = '/static/BookReader/images/';
 
 br.getEmbedCode = function(frameWidth, frameHeight, viewParams) {
     return "Embed code not supported in bookreader demo.";
