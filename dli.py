@@ -77,7 +77,8 @@ class book_image:
         dirpath = d['read_url_params']['path1']
         url = IMAGE_URL % locals()
         tif_path = self.get_path(barcode, index, "tif")
-        self.download(url, tif_path)
+        if not self.download(url, tif_path):
+            raise web.notfound()
 
         jpg_path = self.get_path(barcode, index, "jpg")
         self.convert(tif_path, jpg_path)
@@ -87,12 +88,19 @@ class book_image:
 
     def download(self, url, img_path):
         if os.path.exists(img_path):
-            return
+            return True
         
         print >> web.debug, "downloading", url
-        data = urllib2.urlopen(url).read()
+        try:
+            data = urllib2.urlopen(url).read()
+        except IOError:
+            print >> web.debug, "failed to download", url
+            return False
+
         with open(img_path, "wb") as f:
             f.write(data)
+
+        return True
     
     def convert(self, tif, jpg):
         if os.path.exists(jpg):
