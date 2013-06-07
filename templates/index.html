@@ -6,7 +6,7 @@ $def with(barcode="", error="")
     <title>DLI Bookreader</title>
     <style type="text/css">
     	form {
-    		padding: 20px 0px;
+    		padding-top: 20px 0px;
     	}
     	form input {
     		font-size: 1.1em;    		
@@ -26,6 +26,10 @@ $def with(barcode="", error="")
 		<input type="text" name="barcode" id="barcode" placeholder="Enter DLI Barcode"/>
 		<input type="submit" name="" value="Read"/>
 	</form>
+    <div>For example, try <a href="/2020120002347">2020120002347</a>.
+        <br/>
+        <br/>
+    </div>
 
 	<div>This provides a nice interface to read books from <a href="http://www.new.dli.ernet.in/">Digital Library of India</a> using the <a href="http://archive.org/">Internet Archive</a>'s book reader.<br/><br/>
 	Code: <a href="https://github.com/anandology/dli-bookreader">https://github.com/anandology/dli-bookreader</a>
