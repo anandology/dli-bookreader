@@ -1,6 +1,6 @@
 """Web app to display DLI books in Internet Archive book reader.
 """
-import urllib2
+import urllib2, urllib, urlparse
 import os
 import web
 import json
@@ -19,7 +19,7 @@ render = web.template.render("templates/", globals={"json_encode": json.dumps})
 
 IMGDIR = "cache"
 METADATA_URL = "http://www.new.dli.ernet.in/cgi-bin/DBscripts/allmetainfo.cgi?barcode=%s"
-IMAGE_URL = "http://www.new1.dli.ernet.in%(dirpath)s/PTIFF/%(index)08d.tif"
+IMAGE_URL = "http://%(server)s%(dirpath)s/PTIFF/%(index)08d.tif"
 
 def get_book_metadata(barcode):
     rows = db.select("metadata", where="barcode=$barcode", vars=locals()).list()
@@ -37,9 +37,14 @@ def _get_book_metadata(barcode):
     tds = soup.find_all("td")
     d = dict((e1.get_text().strip(), e2.get_text().strip()) for e1, e2 in web.group(tds, 2))
     a = soup.find("a")
-    read_url = a['href']
+    read_url = urllib.basejoin(url, a['href'])
+
     d['read_url'] = read_url
-    d['read_url_params'] = dict(kv.strip().split("=") for kv in read_url.split("?")[-1].split("&"))
+
+    (scheme, server, path, query, fragment) = urlparse.urlsplit(read_url)
+    d['Server'] = server
+
+    d['read_url_params'] = dict((k.strip(), v.strip()) for k, v in urlparse.parse_qsl(query))
     
     d['TotalPages'] = int(d['TotalPages'])
     d['SourceURL'] = url
@@ -68,6 +73,7 @@ class book_image:
         index = int(index)
         d = get_book_metadata(barcode)
 
+        server = d['Server']
         dirpath = d['read_url_params']['path1']
         url = IMAGE_URL % locals()
         tif_path = self.get_path(barcode, index, "tif")
